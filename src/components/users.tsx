@@ -3,10 +3,13 @@ import axios from 'axios'
 import { Link } from "react-router-dom"
 import Search from "./search"
 import Loading from "./Loading"
+import type { User } from "./types/userType"
+
 
 function Users() {
 
-    const [users, setUsers] = useState<any[]>([])
+    
+    const [users, setUsers] = useState<User[]>([])
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(true)
 
@@ -32,9 +35,9 @@ function Users() {
     //filter the users by either email username, name and address
     const findUsers = users.filter((item) => {
         const searchWith = `${item.name} ${item.username} ${item.address} ${item.email}`
-        const query = search.toLowerCase()
-        return query === '' ? true : searchWith.toLowerCase().includes(query)
+        return search.toLowerCase()=== '' ? true : searchWith.toLowerCase().includes(search)
     })
+    
     return (
         <>
             {loading ?
