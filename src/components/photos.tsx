@@ -7,21 +7,20 @@ function Photos() {
     const [photos, setPhotos] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
-    async function getPhotos() {
+
+    useEffect(() => {
+        async function getPhotos() {
+        setLoading(true)
         try {
-            setLoading(true)
             const res = await axios('https://jsonplaceholder.typicode.com/posts')
             setPhotos(res.data)
-            localStorage.setItem('photos', JSON.stringify(res.data))
             setLoading(false)
         } catch (error) {
-            const savedPhotos = localStorage.getItem('photos')
-            savedPhotos && setPhotos(JSON.parse(savedPhotos))
+        console.error("failed to fetch data", error)
 
             setLoading(false)
         }
     }
-    useEffect(() => {
         getPhotos()
     }, [])
     return (

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom"
 import Search from "./search"
 import Loading from "./Loading"
 import type { User } from "./types/userType"
+import useDebounce from "./searchFunction"
 
 
 function Users() {
@@ -13,18 +14,17 @@ function Users() {
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(true)
 
+    // search is assigned to debounceand T is a string. the search is perdomed after 900ms
+    const debouncedSearch = useDebounce(search, 900)
+
     async function fetchUser() {
+        setLoading(true)
         try {
-            setLoading(true)
             const res = await axios('https://jsonplaceholder.typicode.com/users')
             setUsers(res.data)
-            //set the post to local storage
-            localStorage.setItem("users", JSON.stringify(res.data))
             setLoading(false)
         } catch (error) {
-            const storedUsers = localStorage.getItem("users")
-            storedUsers && setUsers(JSON.parse(storedUsers))
-
+            console.error("failed to fetch data", error)
             setLoading(false)
         }
     }
@@ -34,8 +34,11 @@ function Users() {
 
     //filter the users by either email username, name and address
     const findUsers = users.filter((item) => {
-        const searchWith = `${item.name} ${item.username} ${item.address} ${item.email}`
-        return search.toLowerCase()=== '' ? true : searchWith.toLowerCase().includes(search)
+        const debounce = debouncedSearch.toLowerCase()
+        const searchWith = `${item.name} ${item.username} ${item.address} ${item.email}`.toLowerCase()
+        //if the search includes values in the debounce, the search is done after 900ms of typing. 
+        // 'it does not search each alph, rather the whole word.
+        return search.toLowerCase()=== '' ? true : searchWith.includes(debounce)
     })
     
     return (
